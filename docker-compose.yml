@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine  # Latest stable, alpine = smaller image
+    container_name: parlez-db
+    environment:
+      POSTGRES_USER: parlez_user
+      POSTGRES_PASSWORD: local_dev_password  # Change this
+      POSTGRES_DB: parlez
+    ports:
+      - "5432:5432"  # Host:Container - access via localhost:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist data between restarts
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Optional: init scripts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U parlez_user -d parlez"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:  # Named volume - Docker manages storage location

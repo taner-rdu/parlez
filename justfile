@@ -23,3 +23,33 @@ fmt:
 lint:
     uv run ruff check .
     uv run black --check .
+
+# Run tests with coverage report
+test-cov:
+    uv run pytest --cov=app --cov-report=term-missing
+
+# Clean Python cache files
+clean:
+    find . -type d -name __pycache__ -exec rm -rf {} +
+    find . -type f -name "*.pyc" -delete
+
+# Start database
+db-up:
+    docker compose up -d
+
+# Stop database
+db-down:
+    docker compose down
+
+# Stop and remove data (fresh start)
+db-reset:
+    docker compose down -v
+    docker compose up -d
+
+# View logs
+db-logs:
+    docker compose logs -f postgres
+
+# Connect to psql CLI
+db-shell:
+    docker compose exec postgres psql -U parlez_user -d parlez
