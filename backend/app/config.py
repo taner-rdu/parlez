@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     deepl_api_key: str = ""
 
     class Config:
-        env_file = ".env"  # Automatically load variables from .env file
+        env_file = "../.env"  # Load from project root
 
 
 settings = Settings()  # Singleton instance used throughout the app

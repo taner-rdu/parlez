@@ -1,18 +1,19 @@
 import deepl
 from fastapi import APIRouter, HTTPException
 
-from app.api.schemas import TranslateRequest, TranslateResponse
-from app.config import settings
+from .schemas import TranslateRequest, TranslateResponse
+from ..config import get_deepl_api_key
 
 router = APIRouter()
 
 
 @router.post("/translate", response_model=TranslateResponse)
 async def translate(request: TranslateRequest) -> TranslateResponse:
-    if not settings.deepl_api_key:
+    api_key = get_deepl_api_key()
+    if not api_key:
         raise HTTPException(status_code=500, detail="DeepL API key not configured")
 
-    translator = deepl.Translator(settings.deepl_api_key)
+    translator = deepl.Translator(api_key)
 
     try:
         result = translator.translate_text(
