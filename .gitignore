@@ -28,6 +28,12 @@ coverage.xml
 *.swp
 *.swo
 
+# Node
+node_modules/
+
+# Playwright
+test-results/
+
 # macOS
 .DS_Store
 
