@@ -58,7 +58,11 @@ jobs:
         with:
           node-version: '20'
       - name: Wait for backend
-        run: npx wait-on http://localhost:8000/health --timeout 30000
+        run: |
+          for i in {1..10}; do
+            curl -s http://localhost:8000/health && break
+            sleep 2
+          done
       - name: Install Playwright
         run: npm ci
         working-directory: ./backend
