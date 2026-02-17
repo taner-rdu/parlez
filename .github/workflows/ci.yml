@@ -16,5 +16,5 @@ jobs:
         run: uv sync --extra dev
         working-directory: ./backend
       - name: Run tests
-        run: uv run pytest
+        run: uv run pytest --junitxml=test-results.xml
         working-directory: ./backend
