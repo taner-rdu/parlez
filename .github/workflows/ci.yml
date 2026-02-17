@@ -18,3 +18,55 @@ jobs:
       - name: Run tests
         run: uv run pytest
         working-directory: ./backend
+  integration-tests:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+
+      - name: Install Python
+        run: uv python install
+
+      - name: Install Python dependencies
+        run: uv sync --extra dev
+        working-directory: ./backend
+
+      - name: Start backend
+        run: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+        working-directory: ./backend
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+
+      - name: Wait for backend
+        run: npx wait-on http://localhost:8000/health --timeout 30000
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: npm ci
+        working-directory: ./backend
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: ./backend
+
+      - name: Run integration tests
+        run: npx playwright test tests/integration/
+        working-directory: ./backend
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Integration Tests
+          path: backend/test-results/integration.xml
+          reporter: java-junit
