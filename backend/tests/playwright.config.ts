@@ -1,6 +1,3 @@
-No, the reporter goes inside `defineConfig`:
-
-```ts
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
@@ -12,4 +9,4 @@ export default defineConfig({
     baseURL: "http://localhost:8000",
   },
 });
-```
+
