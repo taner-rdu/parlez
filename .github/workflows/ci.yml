@@ -65,10 +65,10 @@ jobs:
         working-directory: ./backend/tests
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
-        working-directory: ./backend
+        working-directory: ./backend/tests
       - name: Run integration tests
-        run: npx playwright test tests/integration/
-        working-directory: ./backend
+        run: npx playwright test integration/
+        working-directory: ./backend/tests
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
       - name: Publish test results
@@ -76,5 +76,5 @@ jobs:
         if: always()
         with:
           name: Integration Tests
-          path: backend/test-results/integration.xml
+          path: backend/tests/test-results/integration.xml
           reporter: java-junit
