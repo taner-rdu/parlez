@@ -49,6 +49,8 @@ jobs:
         working-directory: ./backend
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+      - name: Debug backend
+        run: sleep 3 && curl -v http://localhost:8000/health
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
