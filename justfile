@@ -63,3 +63,13 @@ db-logs:
 # Connect to psql CLI
 db-shell:
     docker compose exec postgres psql -U parlez_user -d parlez
+
+# Start AWS RDS instance
+rds-start:
+    aws rds start-db-instance --db-instance-identifier parlez-db --region us-east-1
+    aws rds wait db-instance-available --db-instance-identifier parlez-db --region us-east-1
+    @echo "RDS is up"
+
+rds-stop:
+    aws rds stop-db-instance --db-instance-identifier parlez-db --region us-east-1
+    @echo "RDS stop initiated"

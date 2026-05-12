@@ -2,8 +2,6 @@ name: parlez-infrastructure
 description: AWS infrastructure for parlez
 runtime:
   name: python
-  options:
-    toolchain: uv
 config:
   pulumi:tags:
     value:
