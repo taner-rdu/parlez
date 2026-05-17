@@ -1,54 +1,23 @@
-import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
+import Dashboard from './pages/Dashboard'
+import Translate from './pages/Translate'
+import Vocabulary from './pages/Vocabulary'
+import Conjugation from './pages/Conjugation'
+import Sentences from './pages/Sentences'
 
-function App() {
-  const [isApiUp, setIsApiUp] = useState<boolean | null>(null)
-  const [text, setText] = useState('')
-  const [translation, setTranslation] = useState('')
-
-  useEffect(() => {
-    fetch('http://localhost:8000/health')
-      .then(response => setIsApiUp(response.ok))
-      .catch(() => setIsApiUp(false))
-  }, [])
-
-  const handleTranslate = () => {
-    fetch('http://localhost:8000/translate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: text,
-        source_lang: 'EN',
-        target_lang: 'FR'
-      })
-    })
-      .then(response => response.json())
-      .then(data => setTranslation(data.translated_text))
-      .catch(() => setTranslation('Error translating'))
-  }
-
+export default function App() {
   return (
-    <div>
-      <h1>Parlez</h1>
-      <p>
-        API Status:{' '}
-        <span style={{ color: isApiUp ? 'green' : 'red' }}>
-          {isApiUp === null ? 'Checking...' : isApiUp ? 'Online' : 'Offline'}
-        </span>
-      </p>
-
-      <div>
-        <input
-          type="text"
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder="Enter English text"
-        />
-        <button onClick={handleTranslate}>Translate to French</button>
-      </div>
-
-      {translation && <p>Translation: {translation}</p>}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="translate" element={<Translate />} />
+          <Route path="vocabulary" element={<Vocabulary />} />
+          <Route path="conjugation" element={<Conjugation />} />
+          <Route path="sentences" element={<Sentences />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App
