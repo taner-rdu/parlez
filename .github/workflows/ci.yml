@@ -1,10 +1,8 @@
 name: CI
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -20,15 +18,20 @@ jobs:
         run: uv sync --extra dev
         working-directory: ./backend
       - name: Run tests
-        run: uv run pytest --junitxml=test-results.xml
+        run: uv run pytest --alluredir=allure-results
         working-directory: ./backend
-      - name: Publish test results
-        uses: dorny/test-reporter@v1
+      - name: Generate Allure report
         if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate allure-results --clean -o allure-report
+        working-directory: ./backend
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: Unit Tests
-          path: backend/test-results.xml
-          reporter: java-junit
+          name: unit-test-allure-report
+          path: backend/allure-report
 
   integration-tests:
     needs: unit-tests
@@ -52,8 +55,6 @@ jobs:
         working-directory: ./backend
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-      - name: Debug backend
-        run: sleep 3 && curl -v http://localhost:8000/health
       - name: Wait for backend
         run: |
           for i in {1..10}; do
@@ -67,14 +68,19 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: ./backend/tests
       - name: Run integration tests
-        run: npx playwright test integration/
+        run: npx playwright test integration/ --reporter=allure-playwright
         working-directory: ./backend/tests
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-      - name: Publish test results
-        uses: dorny/test-reporter@v1
+      - name: Generate Allure report
         if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate allure-results --clean -o allure-report
+        working-directory: ./backend/tests
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: Integration Tests
-          path: backend/tests/test-results/integration.xml
-          reporter: java-junit
+          name: integration-test-allure-report
+          path: backend/tests/allure-report
