@@ -84,3 +84,47 @@ jobs:
         with:
           name: integration-test-allure-report
           path: backend/tests/allure-report
+
+  publish-reports:
+    needs: [unit-tests, integration-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download unit test report
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-allure-report
+          path: reports/unit
+      - name: Download integration test report
+        uses: actions/download-artifact@v4
+        with:
+          name: integration-test-allure-report
+          path: reports/integration
+      - name: Create index page
+        run: |
+          cat > reports/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head><title>Parlez Test Reports</title></head>
+          <body>
+            <h1>Parlez Test Reports</h1>
+            <ul>
+              <li><a href="unit/index.html">Unit Tests</a></li>
+              <li><a href="integration/index.html">Integration Tests</a></li>
+            </ul>
+          </body>
+          </html>
+          EOF
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: reports
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
