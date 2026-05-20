@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = "../.env"  # Load from project root
+        extra = "ignore"
 
 
 settings = Settings()  # Singleton instance used throughout the app
