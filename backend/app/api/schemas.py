@@ -37,5 +37,6 @@ class VocabWord(BaseModel):
     french_word: str
     part_of_speech: PartOfSpeech | None
     created_at: datetime
+    gender: str | None
 
     model_config = ConfigDict(from_attributes=True)
