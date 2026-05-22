@@ -9,12 +9,16 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class PartOfSpeech(str, enum.Enum):
     noun = "noun"
-    verb = "verb"
-    adjective = "adjective"
+    article = "article"
     adverb = "adverb"
     pronoun = "pronoun"
-    determiner = "determiner"
-    other = "other"
+    adjective = "adjective"
+    verb = "verb"
+    question_word = "question_word"
+    preposition = "preposition"
+    contraction = "contraction"
+    demonstrative = "demonstrative"
+    connector = "connector"
 
 
 class Base(DeclarativeBase):
@@ -43,6 +47,7 @@ class WantToLearn(Base):
     french_word: Mapped[str] = mapped_column(String, nullable=False)
     part_of_speech: Mapped[PartOfSpeech | None] = mapped_column(Enum(PartOfSpeech), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    gender: Mapped[str | None] = mapped_column(String, nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="want_to_learn")
 
@@ -56,5 +61,6 @@ class KnownVocab(Base):
     french_word: Mapped[str] = mapped_column(String, nullable=False)
     part_of_speech: Mapped[PartOfSpeech | None] = mapped_column(Enum(PartOfSpeech), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    gender: Mapped[str | None] = mapped_column(String, nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="known_vocab")
