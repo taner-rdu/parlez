@@ -19,6 +19,7 @@ class PartOfSpeech(str, enum.Enum):
     contraction = "contraction"
     demonstrative = "demonstrative"
     connector = "connector"
+    interjection = "interjection"
 
 
 class Base(DeclarativeBase):

@@ -22,9 +22,9 @@ Respond with a JSON object and nothing else:
 {{
   "valid": true or false,
   "base_form": "the dictionary/base form (infinitive for verbs, singular for nouns, etc.)",
-  "type": one of: noun, article, adverb, pronoun, adjective, verb, question_word, preposition, contraction, demonstrative, connector,
+  "type": one of: noun, article, adverb, pronoun, adjective, verb, question_word, preposition, contraction, demonstrative, connector, interjection,
   "gender": "masculine" or "feminine" or null (only for nouns; null for everything else),
-  "article": "le" or "la" or "l'" or null (definite article for nouns; null for everything else)
+  "article": "le" or "la" or "l'" or null (definite article for nouns only — interjections, verbs, and all non-noun types must use null)
 }}
 
 If the input is not a real French word, set valid to false and all other fields to null."""
