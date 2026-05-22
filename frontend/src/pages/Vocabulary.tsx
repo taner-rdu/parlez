@@ -89,15 +89,23 @@ export default function Vocabulary() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const controller = new AbortController()
+
     Promise.all([
-      fetch(`${API}/vocab/known`),
-      fetch(`${API}/vocab/want-to-learn`),
+      fetch(`${API}/vocab/known`, { signal: controller.signal }),
+      fetch(`${API}/vocab/want-to-learn`, { signal: controller.signal }),
     ])
       .then(async ([knownRes, wantRes]) => {
         setKnown(await knownRes.json())
         setWantToLearn(await wantRes.json())
       })
-      .catch(() => setError('Could not load vocabulary — is the backend running?'))
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          setError('Could not load vocabulary — is the backend running?')
+        }
+      })
+
+    return () => controller.abort()
   }, [])
 
   const addWord = (endpoint: string, setList: Dispatch<SetStateAction<Word[]>>, setOther: Dispatch<SetStateAction<Word[]>>) =>
