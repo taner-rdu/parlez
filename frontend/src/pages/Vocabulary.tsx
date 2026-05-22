@@ -55,7 +55,7 @@ function WordList({ title, words, onAdd, onDelete }: {
       <div className="flex gap-2 mb-4">
         <input
           className="flex-1 bg-white border border-cream-200 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:border-gold-400 shadow-sm placeholder-gray-300 transition-colors"
-          placeholder="Add a French word..."
+          placeholder="Ajouter un mot français..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
@@ -64,7 +64,7 @@ function WordList({ title, words, onAdd, onDelete }: {
           onClick={handleAdd}
           className="px-4 py-2 bg-navy-900 text-white text-sm font-medium rounded-lg hover:bg-navy-800 transition-colors shadow-sm"
         >
-          Add
+          Ajouter
         </button>
       </div>
       {addError && (
@@ -72,7 +72,7 @@ function WordList({ title, words, onAdd, onDelete }: {
       )}
       {words.length === 0 ? (
         <div className="py-10 text-center bg-white rounded-xl border border-cream-200 shadow-sm">
-          <p className="text-sm text-gray-400">No words yet — add one above</p>
+          <p className="text-sm text-gray-400">Aucun mot pour l'instant — ajoutez-en un ci-dessus</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-cream-200 shadow-sm overflow-hidden">
@@ -93,7 +93,7 @@ function WordList({ title, words, onAdd, onDelete }: {
                 onClick={() => onDelete(w.id)}
                 className="text-gray-300 hover:text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-all"
               >
-                remove
+                supprimer
               </button>
             </div>
           ))}
@@ -121,7 +121,7 @@ export default function Vocabulary() {
       })
       .catch((err) => {
         if (err.name !== 'AbortError') {
-          setError('Could not load vocabulary — is the backend running?')
+          setError('Impossible de charger le vocabulaire — le serveur est-il en marche ?')
         }
       })
 
@@ -143,13 +143,13 @@ export default function Vocabulary() {
       }
       if (res.status === 422) {
         const body = await res.json()
-        return body.detail ?? 'Invalid word'
+        return body.detail ?? 'Mot invalide'
       }
       if (res.status === 503) {
         const body = await res.json()
-        return body.detail ?? 'Service temporarily unavailable, please try again'
+        return body.detail ?? 'Service temporairement indisponible, réessayez'
       }
-      return 'Something went wrong'
+      return 'Une erreur s\'est produite'
     }
 
   const deleteWord = (endpoint: string, setList: Dispatch<SetStateAction<Word[]>>) =>
@@ -164,17 +164,17 @@ export default function Vocabulary() {
         className="text-3xl font-semibold text-navy-900 mb-1"
         style={{ fontFamily: "'Playfair Display', serif" }}
       >
-        Vocabulary
+        Vocabulaire
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Manage your French word lists.</p>
+      <p className="text-sm text-gray-500 mb-8">Gérez vos listes de mots français.</p>
 
       {error && (
         <div className="mb-6 px-4 py-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-500">{error}</div>
       )}
       <div className="flex gap-8">
-        <WordList title="Known" words={known} onAdd={addWord('known', setKnown, setWantToLearn)} onDelete={deleteWord('known', setKnown)} />
+        <WordList title="Connus" words={known} onAdd={addWord('known', setKnown, setWantToLearn)} onDelete={deleteWord('known', setKnown)} />
         <div className="w-px bg-cream-200 shrink-0 mt-10" />
-        <WordList title="Want to Learn" words={wantToLearn} onAdd={addWord('want-to-learn', setWantToLearn, setKnown)} onDelete={deleteWord('want-to-learn', setWantToLearn)} />
+        <WordList title="À apprendre" words={wantToLearn} onAdd={addWord('want-to-learn', setWantToLearn, setKnown)} onDelete={deleteWord('want-to-learn', setWantToLearn)} />
       </div>
     </div>
   )

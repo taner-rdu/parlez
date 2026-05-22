@@ -46,9 +46,9 @@ export default function Translate() {
         className="text-3xl font-semibold text-navy-900 mb-1"
         style={{ fontFamily: "'Playfair Display', serif" }}
       >
-        Translate
+        Traduction
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Translate between English and French instantly.</p>
+      <p className="text-sm text-gray-500 mb-8">Traduisez entre l'anglais et le français instantanément.</p>
 
       {/* Language bar */}
       <div className="flex items-center gap-3 mb-5">
@@ -60,7 +60,7 @@ export default function Translate() {
         <button
           onClick={swapLanguages}
           className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-cream-200 shadow-sm text-gray-400 hover:text-navy-900 hover:border-gold-400 transition-colors text-base"
-          title="Swap languages"
+          title="Inverser les langues"
         >
           ⇄
         </button>
@@ -82,7 +82,7 @@ export default function Translate() {
             rows={6}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter text to translate..."
+            placeholder="Saisissez le texte à traduire..."
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleTranslate() }
             }}
@@ -95,11 +95,11 @@ export default function Translate() {
           </p>
           <div className="flex-1 text-sm text-navy-900 min-h-36">
             {loading ? (
-              <span className="text-gray-400 italic">Translating…</span>
+              <span className="text-gray-400 italic">Traduction en cours…</span>
             ) : result !== null ? (
               <span>{result}</span>
             ) : (
-              <span className="text-gray-300">Translation will appear here</span>
+              <span className="text-gray-300">La traduction apparaîtra ici</span>
             )}
           </div>
         </div>
@@ -111,9 +111,9 @@ export default function Translate() {
           disabled={loading || !input.trim()}
           className="px-5 py-2.5 bg-navy-900 text-white text-sm font-medium rounded-lg hover:bg-navy-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          {loading ? 'Translating…' : 'Translate'}
+          {loading ? 'Traduction en cours…' : 'Traduire'}
         </button>
-        <span className="text-xs text-gray-400">Shift+Enter for new line</span>
+        <span className="text-xs text-gray-400">Maj+Entrée pour un saut de ligne</span>
       </div>
 
       {error && (

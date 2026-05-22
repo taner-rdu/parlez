@@ -2,11 +2,11 @@ import { NavLink, Outlet } from 'react-router-dom'
 import logo from '../assets/parlez.png'
 
 const NAV_LINKS = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/translate', label: 'Translate' },
-  { to: '/vocabulary', label: 'Vocabulary' },
-  { to: '/conjugation', label: 'Conjugation' },
-  { to: '/sentences', label: 'Sentences' },
+  { to: '/', label: 'Tableau de bord' },
+  { to: '/translate', label: 'Traduction' },
+  { to: '/vocabulary', label: 'Vocabulaire' },
+  { to: '/conjugation', label: 'Conjugaison' },
+  { to: '/sentences', label: 'Phrases' },
 ]
 
 export default function Layout() {
@@ -47,7 +47,7 @@ export default function Layout() {
 
         <div className="mt-auto px-4 pb-6">
           <button className="w-full px-3 py-2 border border-navy-700 rounded-lg text-sm text-cream-200/60 hover:text-cream-200 hover:border-navy-600 transition-colors">
-            Log in
+            Se connecter
           </button>
         </div>
       </aside>

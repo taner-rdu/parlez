@@ -1,15 +1,15 @@
 export default function Dashboard() {
   const stats = [
-    { label: 'Words Learned', value: 142, sub: '+12 this week' },
-    { label: 'Sessions', value: 27, sub: '3 this week' },
-    { label: 'Avg Score', value: '84%', sub: 'All time' },
+    { label: 'Mots appris', value: 142, sub: '+12 cette semaine' },
+    { label: 'Séances', value: 27, sub: '3 cette semaine' },
+    { label: 'Score moyen', value: '84%', sub: 'Depuis le début' },
   ]
 
   const activity = [
-    { date: 'May 15', description: 'Practiced 10 vocabulary words' },
-    { date: 'May 14', description: 'Completed conjugation drill: avoir' },
-    { date: 'May 13', description: 'Translated 5 sentences' },
-    { date: 'May 12', description: 'Added 8 new words to vocabulary' },
+    { date: '15 mai', description: 'Pratiqué 10 mots de vocabulaire' },
+    { date: '14 mai', description: 'Exercice de conjugaison terminé : avoir' },
+    { date: '13 mai', description: 'Traduit 5 phrases' },
+    { date: '12 mai', description: 'Ajouté 8 nouveaux mots au vocabulaire' },
   ]
 
   return (
@@ -17,7 +17,7 @@ export default function Dashboard() {
       <h1 className="text-3xl font-semibold text-navy-900 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
         Bonjour
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Here's how your French is coming along.</p>
+      <p className="text-sm text-gray-500 mb-8">Voici où en est votre français.</p>
 
       <div className="grid grid-cols-3 gap-4 mb-10">
         {stats.map((s) => (
@@ -38,7 +38,7 @@ export default function Dashboard() {
         className="text-xl font-semibold text-navy-900 mb-4"
         style={{ fontFamily: "'Playfair Display', serif" }}
       >
-        Recent Activity
+        Activité récente
       </h2>
       <div className="bg-white rounded-xl shadow-sm border border-cream-200 overflow-hidden">
         {activity.map((a, i) => (

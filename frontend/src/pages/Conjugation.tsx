@@ -38,12 +38,12 @@ export default function Conjugation() {
       if (!res.ok) throw new Error('Server error')
       const data = await res.json()
       if (!data.valid) {
-        setError(data.error ?? 'Not a valid French verb')
+        setError(data.error ?? 'Verbe français invalide')
         return
       }
       setTable({ verb: trimmed, tenses: data.tenses })
     } catch {
-      setError('Could not reach the conjugation service.')
+      setError('Impossible de joindre le service de conjugaison.')
     } finally {
       setLoading(false)
     }
@@ -55,14 +55,14 @@ export default function Conjugation() {
         className="text-3xl font-semibold text-navy-900 mb-1"
         style={{ fontFamily: "'Playfair Display', serif" }}
       >
-        Conjugation
+        Conjugaison
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Enter a verb to see its full conjugation table.</p>
+      <p className="text-sm text-gray-500 mb-8">Entrez un verbe pour voir son tableau de conjugaison complet.</p>
 
       <div className="flex gap-2 mb-6">
         <input
           className="flex-1 bg-white border border-cream-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:border-gold-400 shadow-sm placeholder-gray-300 transition-colors"
-          placeholder="Enter a French verb (e.g. parler)..."
+          placeholder="Entrez un verbe français (ex. parler)..."
           value={verb}
           onChange={(e) => setVerb(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
@@ -72,7 +72,7 @@ export default function Conjugation() {
           disabled={loading}
           className="px-5 py-2.5 bg-navy-900 text-white text-sm font-medium rounded-lg hover:bg-navy-800 transition-colors shadow-sm disabled:opacity-50"
         >
-          {loading ? 'Loading…' : 'Generate'}
+          {loading ? 'Chargement…' : 'Générer'}
         </button>
       </div>
 
@@ -96,7 +96,7 @@ export default function Conjugation() {
               <thead>
                 <tr className="bg-cream-100 border-b border-cream-200">
                   <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Pronoun
+                    Pronom
                   </th>
                   {TENSES.map((tense) => (
                     <th
