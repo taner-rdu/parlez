@@ -1,24 +1,52 @@
 import { useState } from 'react'
 
-const MOCK_TABLE = {
-  verb: 'parler',
-  tense: 'Présent',
-  rows: [
-    { pronoun: 'je', form: 'parle' },
-    { pronoun: 'tu', form: 'parles' },
-    { pronoun: 'il/elle', form: 'parle' },
-    { pronoun: 'nous', form: 'parlons' },
-    { pronoun: 'vous', form: 'parlez' },
-    { pronoun: 'ils/elles', form: 'parlent' },
-  ],
+const API = 'http://localhost:8000'
+
+const TENSES = [
+  'Présent',
+  'Passé composé',
+  'Imparfait',
+  'Futur simple',
+  'Conditionnel présent',
+  'Subjonctif présent',
+]
+const PRONOUNS = ['je', 'tu', 'il/elle/on', 'nous', 'vous', 'ils/elles']
+
+type ConjugationTable = {
+  verb: string
+  tenses: Record<string, Record<string, string>>
 }
 
 export default function Conjugation() {
   const [verb, setVerb] = useState('')
-  const [table, setTable] = useState<typeof MOCK_TABLE | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [table, setTable] = useState<ConjugationTable | null>(null)
 
-  const handleGenerate = () => {
-    setTable(MOCK_TABLE)
+  const handleGenerate = async () => {
+    const trimmed = verb.trim()
+    if (!trimmed) return
+    setLoading(true)
+    setError(null)
+    setTable(null)
+    try {
+      const res = await fetch(`${API}/conjugation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verb: trimmed }),
+      })
+      if (!res.ok) throw new Error('Server error')
+      const data = await res.json()
+      if (!data.valid) {
+        setError(data.error ?? 'Not a valid French verb')
+        return
+      }
+      setTable({ verb: trimmed, tenses: data.tenses })
+    } catch {
+      setError('Could not reach the conjugation service.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -31,7 +59,7 @@ export default function Conjugation() {
       </h1>
       <p className="text-sm text-gray-500 mb-8">Enter a verb to see its full conjugation table.</p>
 
-      <div className="flex gap-2 mb-8">
+      <div className="flex gap-2 mb-6">
         <input
           className="flex-1 bg-white border border-cream-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:border-gold-400 shadow-sm placeholder-gray-300 transition-colors"
           placeholder="Enter a French verb (e.g. parler)..."
@@ -41,38 +69,63 @@ export default function Conjugation() {
         />
         <button
           onClick={handleGenerate}
-          className="px-5 py-2.5 bg-navy-900 text-white text-sm font-medium rounded-lg hover:bg-navy-800 transition-colors shadow-sm"
+          disabled={loading}
+          className="px-5 py-2.5 bg-navy-900 text-white text-sm font-medium rounded-lg hover:bg-navy-800 transition-colors shadow-sm disabled:opacity-50"
         >
-          Generate
+          {loading ? 'Loading…' : 'Generate'}
         </button>
       </div>
 
+      {error && (
+        <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg px-4 py-2 mb-6">
+          {error}
+        </p>
+      )}
+
       {table && (
         <div>
-          <div className="flex items-baseline gap-3 mb-4">
-            <h2
-              className="text-2xl font-semibold text-navy-900 italic"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              {table.verb}
-            </h2>
-            <span className="text-sm text-gray-400">{table.tense}</span>
-          </div>
+          <h2
+            className="text-2xl font-semibold text-navy-900 italic mb-4"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {table.verb}
+          </h2>
 
-          <div className="bg-white rounded-xl border border-cream-200 shadow-sm overflow-hidden">
-            <div className="grid grid-cols-2 bg-cream-100 border-b border-cream-200 px-5 py-2.5">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pronoun</span>
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Form</span>
-            </div>
-            {table.rows.map((r, i) => (
-              <div
-                key={r.pronoun}
-                className={`grid grid-cols-2 px-5 py-3 ${i !== table.rows.length - 1 ? 'border-b border-cream-200' : ''} ${i % 2 === 0 ? 'bg-white' : 'bg-cream-50'}`}
-              >
-                <span className="text-sm text-gray-400 font-medium">{r.pronoun}</span>
-                <span className="text-sm text-navy-900 font-medium">{r.form}</span>
-              </div>
-            ))}
+          <div className="rounded-xl border border-cream-200 shadow-sm">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-cream-100 border-b border-cream-200">
+                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Pronoun
+                  </th>
+                  {TENSES.map((tense) => (
+                    <th
+                      key={tense}
+                      className="text-left px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                    >
+                      {tense}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {PRONOUNS.map((pronoun, i) => (
+                  <tr
+                    key={pronoun}
+                    className={`${i !== PRONOUNS.length - 1 ? 'border-b border-cream-200' : ''} ${i % 2 === 0 ? 'bg-white' : 'bg-cream-50'}`}
+                  >
+                    <td className="px-4 py-3 text-gray-400 font-medium">
+                      {pronoun}
+                    </td>
+                    {TENSES.map((tense) => (
+                      <td key={tense} className="px-4 py-3 text-navy-900 font-medium">
+                        {table.tenses[tense]?.[pronoun] ?? '—'}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

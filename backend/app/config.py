@@ -6,6 +6,15 @@ from pydantic_settings import BaseSettings
 
 
 @lru_cache()
+def get_anthropic_api_key() -> str:
+    if key := os.environ.get("ANTHROPIC_API_KEY"):
+        return key
+    client = boto3.client('secretsmanager', region_name='us-east-1')
+    response = client.get_secret_value(SecretId='parlez/anthropic-api-key')
+    return response['SecretString']
+
+
+@lru_cache()
 def get_deepl_api_key() -> str:
     # Prefer env var so CI (and local dev) can inject the key without needing AWS credentials.
     # Falls back to Secrets Manager for production deployments.

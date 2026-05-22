@@ -18,6 +18,16 @@ class TranslateResponse(BaseModel):
     target_lang: str
 
 
+class ConjugationRequest(BaseModel):
+    verb: str
+
+
+class ConjugationResponse(BaseModel):
+    valid: bool
+    error: str | None = None
+    tenses: dict[str, dict[str, str]] | None = None
+
+
 class AddWordRequest(BaseModel):
     french_word: str
 
