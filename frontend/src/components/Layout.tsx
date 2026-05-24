@@ -13,12 +13,12 @@ export default function Layout() {
   return (
     <div className="flex h-screen bg-cream-100" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Sidebar */}
-      <aside className="w-52 shrink-0 bg-navy-900 flex flex-col">
+      <aside className="w-72 shrink-0 bg-navy-900 flex flex-col">
         {/* Brand */}
-        <div className="flex flex-col items-center pt-8 pb-6 px-4 border-b border-navy-700">
-          <img src={logo} alt="parlez logo" className="h-14 mb-3 opacity-90" />
+        <div className="flex flex-col items-center pt-10 pb-8 px-6 border-b border-navy-700">
+          <img src={logo} alt="parlez logo" className="h-16 mb-4 opacity-90" />
           <span
-            className="text-cream-200 text-xl tracking-widest"
+            className="text-cream-200 text-2xl tracking-widest"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             ~parlez~
@@ -26,16 +26,19 @@ export default function Layout() {
         </div>
 
         {/* Nav */}
-        <nav className="flex flex-col pt-4 px-3 gap-0.5">
+        <nav className="flex flex-col pt-6 px-4 gap-1">
+          <span className="px-3 mb-2 text-xs font-semibold tracking-widest text-cream-200/30 uppercase">
+            Navigation
+          </span>
           {NAV_LINKS.map(({ to, label }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `px-4 py-2.5 text-sm rounded-lg transition-colors ${
+                `px-4 py-3.5 text-base rounded-lg transition-colors ${
                   isActive
-                    ? 'bg-navy-800 text-gold-400 font-medium border-l-2 border-gold-500'
+                    ? 'bg-navy-800 text-gold-400 font-semibold border-l-2 border-gold-500'
                     : 'text-cream-200/70 hover:bg-navy-800 hover:text-cream-200'
                 }`
               }
@@ -45,8 +48,8 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="mt-auto px-4 pb-6">
-          <button className="w-full px-3 py-2 border border-navy-700 rounded-lg text-sm text-cream-200/60 hover:text-cream-200 hover:border-navy-600 transition-colors">
+        <div className="mt-auto px-5 pb-8">
+          <button className="w-full px-4 py-3 bg-navy-800 border border-navy-700 rounded-xl text-sm font-medium text-cream-200/80 hover:text-cream-200 hover:bg-navy-700 hover:border-navy-600 transition-colors">
             Se connecter
           </button>
         </div>
@@ -54,7 +57,7 @@ export default function Layout() {
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-8 py-8">
+        <div className="px-12 py-10">
           <Outlet />
         </div>
       </main>

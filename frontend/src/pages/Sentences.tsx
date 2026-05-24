@@ -69,13 +69,13 @@ export default function Sentences() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-navy-900 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <h1 className="text-4xl font-semibold text-navy-900 mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
         Phrases
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Pratiquez la traduction de l'anglais vers le français.</p>
+      <p className="text-base text-gray-400 mb-10">Pratiquez la traduction de l'anglais vers le français.</p>
 
       {/* Form */}
-      <div className="bg-white rounded-xl border border-cream-200 shadow-sm px-6 py-5 mb-8">
+      <div className="bg-white rounded-2xl border border-cream-200 shadow-sm px-8 py-7 mb-10">
         <div className="flex flex-col gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
