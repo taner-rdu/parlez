@@ -30,3 +30,6 @@ dev = [
     "ruff>=0.14.14",
     "allure-pytest>=2.13.0",
 ]
+
+[tool.pytest.ini_options]
+base_url = "http://localhost:8000"

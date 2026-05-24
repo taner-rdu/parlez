@@ -6,7 +6,6 @@ setup:
     cd backend && uv sync
     cd backend && uv run playwright install
     cd frontend && npm install
-    cd backend/tests && npm install
 
 # Start backend dev server on http://localhost:8000
 backend:
@@ -22,7 +21,7 @@ test:
 
 # Run integration tests (requires backend running on localhost:8000)
 test-integration:
-    cd backend/tests && npx playwright test
+    cd backend && uv run pytest tests/integration/
 
 # Format backend code
 fmt:
