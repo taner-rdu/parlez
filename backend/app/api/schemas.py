@@ -28,6 +28,26 @@ class ConjugationResponse(BaseModel):
     tenses: dict[str, dict[str, str]] | None = None
 
 
+class SentenceGenerateRequest(BaseModel):
+    topic: str
+    level: str
+    use_known_words_only: bool = False
+
+
+class SentenceGenerateResponse(BaseModel):
+    sentences: list[str]
+
+
+class SentenceCheckRequest(BaseModel):
+    english_sentence: str
+    user_translation: str
+
+
+class SentenceCheckResponse(BaseModel):
+    score: int
+    correct_translation: str
+
+
 class AddWordRequest(BaseModel):
     french_word: str
 

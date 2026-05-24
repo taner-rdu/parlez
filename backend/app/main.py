@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .api.translate import router as translate_router
 from .api.routes.vocab import router as vocab_router
 from .api.routes.conjugation import router as conjugation_router
+from .api.routes.sentences import router as sentences_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,6 +22,7 @@ app.add_middleware(
 app.include_router(translate_router)
 app.include_router(vocab_router)
 app.include_router(conjugation_router)
+app.include_router(sentences_router)
 
 
 @app.get("/health")
