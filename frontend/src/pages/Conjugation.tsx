@@ -5,10 +5,6 @@ const API = 'http://localhost:8000'
 const TENSES = [
   'Présent',
   'Passé composé',
-  'Imparfait',
-  'Futur simple',
-  'Conditionnel présent',
-  'Subjonctif présent',
 ]
 const PRONOUNS = ['je', 'tu', 'il/elle/on', 'nous', 'vous', 'ils/elles']
 

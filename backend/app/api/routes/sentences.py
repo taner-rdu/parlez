@@ -12,7 +12,7 @@ from app.api.schemas import (
     SentenceGenerateResponse,
 )
 from app.db import get_db
-from app.models import KnownVocab, User
+from app.models import KnownVocab, User, WantToLearn
 
 router = APIRouter(prefix="/sentences", tags=["sentences"])
 _claude = anthropic.Anthropic()
@@ -41,10 +41,22 @@ def generate_sentences(
         if words:
             vocab_hint = f"\n\nKnown French vocabulary: {', '.join(words)}\nDesign sentences whose French translations primarily use these words."
 
+    if request.use_want_to_learn_words:
+        wtl_words = [
+            w.french_word
+            for w in db.query(WantToLearn).filter(WantToLearn.user_id == user.id).all()
+        ]
+        if wtl_words:
+            vocab_hint += f"\n\nWords the student wants to learn: {', '.join(wtl_words)}\nTry to incorporate these words into the sentences."
+
+    tense_hint = ""
+    if request.tenses:
+        tense_hint = f"\n\nTenses to use: {', '.join(request.tenses)}\nAll sentences must use one of these tenses only."
+
     prompt = f"""Generate exactly 10 English sentences for French translation practice.
 
 Topic: {request.topic}
-CEFR Level: {request.level}{vocab_hint}
+CEFR Level: {request.level}{vocab_hint}{tense_hint}
 
 - Appropriate complexity for {request.level}
 - All related to the topic

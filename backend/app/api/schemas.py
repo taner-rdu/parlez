@@ -32,6 +32,8 @@ class SentenceGenerateRequest(BaseModel):
     topic: str
     level: str
     use_known_words_only: bool = False
+    use_want_to_learn_words: bool = False
+    tenses: list[str] = []
 
 
 class SentenceGenerateResponse(BaseModel):

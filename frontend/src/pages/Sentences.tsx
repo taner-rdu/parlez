@@ -28,6 +28,8 @@ export default function Sentences() {
   const [topic, setTopic] = useState('')
   const [level, setLevel] = useState('A1')
   const [useKnownWords, setUseKnownWords] = useState(false)
+  const [useWantToLearnWords, setUseWantToLearnWords] = useState(false)
+  const [selectedTenses, setSelectedTenses] = useState<string[]>([])
   const [generating, setGenerating] = useState(false)
   const [generateError, setGenerateError] = useState<string | null>(null)
   const [sentences, setSentences] = useState<SentenceState[]>([])
@@ -40,7 +42,7 @@ export default function Sentences() {
       const res = await fetch(`${API}/sentences/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: topic.trim(), level, use_known_words_only: useKnownWords }),
+        body: JSON.stringify({ topic: topic.trim(), level, use_known_words_only: useKnownWords, use_want_to_learn_words: useWantToLearnWords, tenses: selectedTenses }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
       const data = await res.json()
@@ -101,29 +103,32 @@ export default function Sentences() {
             />
           </div>
 
-          <div className="flex items-center gap-6 flex-wrap">
-            <div>
-              <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Niveau
-              </label>
-              <div className="flex gap-1.5">
-                {LEVELS.map(l => (
-                  <button
-                    key={l}
-                    onClick={() => setLevel(l)}
-                    className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
-                      level === l
-                        ? 'bg-navy-900 text-white'
-                        : 'bg-cream-50 border border-cream-200 text-gray-600 hover:border-gold-400 hover:text-navy-900'
-                    }`}
-                  >
-                    {l}
-                  </button>
-                ))}
-              </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Niveau
+            </label>
+            <div className="flex gap-1.5">
+              {LEVELS.map(l => (
+                <button
+                  key={l}
+                  onClick={() => setLevel(l)}
+                  className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
+                    level === l
+                      ? 'bg-navy-900 text-white'
+                      : 'bg-cream-50 border border-cream-200 text-gray-600 hover:border-gold-400 hover:text-navy-900'
+                  }`}
+                >
+                  {l}
+                </button>
+              ))}
             </div>
+          </div>
 
-            <div className="ml-auto flex items-center gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Vocabulaire
+            </label>
+            <div className="flex gap-6">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -131,16 +136,51 @@ export default function Sentences() {
                   onChange={(e) => setUseKnownWords(e.target.checked)}
                   className="w-4 h-4 rounded accent-navy-900"
                 />
-                <span className="text-sm text-gray-600">Mots connus uniquement</span>
+                <span className="text-sm text-gray-600">Mots connus</span>
               </label>
-              <button
-                onClick={handleGenerate}
-                disabled={!topic.trim() || generating}
-                className="px-5 py-2.5 bg-navy-900 text-white text-base font-medium rounded-lg hover:bg-navy-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
-              >
-                {generating ? 'Génération…' : 'Générer'}
-              </button>
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={useWantToLearnWords}
+                  onChange={(e) => setUseWantToLearnWords(e.target.checked)}
+                  className="w-4 h-4 rounded accent-navy-900"
+                />
+                <span className="text-sm text-gray-600">Mots à apprendre</span>
+              </label>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Temps
+            </label>
+            <div className="flex gap-1.5">
+              {['Présent', 'Passé composé'].map(t => (
+                <button
+                  key={t}
+                  onClick={() => setSelectedTenses(prev =>
+                    prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]
+                  )}
+                  className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
+                    selectedTenses.includes(t)
+                      ? 'bg-navy-900 text-white'
+                      : 'bg-cream-50 border border-cream-200 text-gray-600 hover:border-gold-400 hover:text-navy-900'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleGenerate}
+              disabled={!topic.trim() || generating}
+              className="px-5 py-2.5 bg-navy-900 text-white text-base font-medium rounded-lg hover:bg-navy-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
+            >
+              {generating ? 'Génération…' : 'Générer'}
+            </button>
           </div>
         </div>
 
