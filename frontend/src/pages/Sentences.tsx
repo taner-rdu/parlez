@@ -3,7 +3,7 @@ import { useState } from 'react'
 const API = 'http://localhost:8000'
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
-type CheckResult = { score: number; correct_translation: string }
+type CheckResult = { score: number; correct_translation: string; explanation: string }
 
 type SentenceState = {
   text: string
@@ -11,6 +11,17 @@ type SentenceState = {
   result: CheckResult | null
   loading: boolean
   submitted: boolean
+}
+
+const speak = async (text: string) => {
+  const res = await fetch('http://localhost:8000/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  })
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  new Audio(url).play()
 }
 
 export default function Sentences() {
@@ -195,8 +206,12 @@ export default function Sentences() {
                       <div className="flex items-center gap-3">
                         <span className="text-green-500 text-xl">✓</span>
                         <div>
-                          <p className="text-base font-medium text-green-700">Parfait !</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-base font-medium text-green-700">Parfait !</p>
+                            <button onClick={() => speak(sentence.result!.correct_translation)} title="Écouter la prononciation" className="text-gray-400 hover:text-navy-900 transition-colors">🔊</button>
+                          </div>
                           <p className="text-base text-gray-600 mt-0.5">{sentence.input}</p>
+                          <p className="text-sm text-gray-400 italic mt-1">{sentence.result.explanation}</p>
                         </div>
                       </div>
                     ) : (
@@ -208,10 +223,12 @@ export default function Sentences() {
                         <p className="text-sm text-gray-500 mb-1">
                           Votre réponse : <span className="text-gray-700">{sentence.input}</span>
                         </p>
-                        <p className="text-sm text-gray-500">
-                          Traduction correcte :{' '}
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <span>Traduction correcte :</span>
                           <span className="text-navy-900 font-medium">{sentence.result.correct_translation}</span>
-                        </p>
+                          <button onClick={() => speak(sentence.result!.correct_translation)} title="Écouter la prononciation" className="text-gray-400 hover:text-navy-900 transition-colors">🔊</button>
+                        </div>
+                        <p className="text-sm text-gray-400 italic mt-1">{sentence.result.explanation}</p>
                       </div>
                     )
                   )}

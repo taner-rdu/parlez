@@ -21,6 +21,7 @@ coverage.xml
 
 # Environment secrets
 .env
+gcp-tts-key.json
 
 # IDE
 .idea/

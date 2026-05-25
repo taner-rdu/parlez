@@ -15,6 +15,18 @@ def get_anthropic_api_key() -> str:
 
 
 @lru_cache()
+def get_gcp_credentials():
+    import json
+    from google.oauth2 import service_account
+    if path := os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+        return service_account.Credentials.from_service_account_file(path)
+    client = boto3.client('secretsmanager', region_name='us-east-1')
+    response = client.get_secret_value(SecretId='parlez/gcp-tts-key')
+    info = json.loads(response['SecretString'])
+    return service_account.Credentials.from_service_account_info(info)
+
+
+@lru_cache()
 def get_deepl_api_key() -> str:
     # Prefer env var so CI (and local dev) can inject the key without needing AWS credentials.
     # Falls back to Secrets Manager for production deployments.

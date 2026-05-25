@@ -76,12 +76,14 @@ English sentence: {request.english_sentence}
 Student's French translation: {request.user_translation}
 
 Score the student's translation from 0 to 100 (100 = perfectly correct, allowing for acceptable synonyms and minor style variants).
-Also provide the ideal correct French translation.
+When scoring, treat "s'il vous plait" and "s'il vous plaît" as identical — do not penalize missing or wrong circumflex accent on "plaît".
+Also provide the ideal correct French translation and a brief explanation (1–2 sentences in English) of what makes the ideal translation correct.
 
 Respond with JSON only:
 {{
   "score": <integer 0-100>,
-  "correct_translation": "<ideal French translation>"
+  "correct_translation": "<ideal French translation>",
+  "explanation": "<brief explanation in English>"
 }}"""
 
     try:
@@ -97,5 +99,7 @@ Respond with JSON only:
 
     data = _parse_json(message.content[0].text.strip())
     return SentenceCheckResponse(
-        score=data["score"], correct_translation=data["correct_translation"]
+        score=data["score"],
+        correct_translation=data["correct_translation"],
+        explanation=data["explanation"],
     )

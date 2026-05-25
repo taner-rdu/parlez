@@ -46,6 +46,7 @@ class SentenceCheckRequest(BaseModel):
 class SentenceCheckResponse(BaseModel):
     score: int
     correct_translation: str
+    explanation: str
 
 
 class AddWordRequest(BaseModel):
