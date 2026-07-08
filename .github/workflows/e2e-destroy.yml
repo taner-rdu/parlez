@@ -1,0 +1,36 @@
+name: E2E environment destroy
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: pulumi-e2e
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::494281305257:role/parlez-github-actions
+          aws-region: us-east-1
+
+      - name: Get Pulumi token from AWS
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            PULUMI_ACCESS_TOKEN,parlez/pulumi-access-token
+          parse-json-secrets: false
+
+      - uses: astral-sh/setup-uv@v4
+
+      - uses: pulumi/actions@v6
+        with:
+          command: destroy
+          stack-name: ev_pulumi/dev
+          work-dir: infrastructure/e2e
