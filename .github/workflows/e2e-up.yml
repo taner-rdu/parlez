@@ -1,0 +1,42 @@
+name: E2E environment up
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: pulumi-e2e
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  up:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::494281305257:role/parlez-github-actions
+          aws-region: us-east-1
+
+      - name: Get Pulumi token from AWS
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            PULUMI_ACCESS_TOKEN,parlez/pulumi-access-token
+          parse-json-secrets: false
+
+      - uses: astral-sh/setup-uv@v4
+
+      - uses: pulumi/actions@v6
+        with:
+          command: up
+          stack-name: ev_pulumi/dev
+          work-dir: infrastructure/e2e
+
+      - name: Write summary
+        run: |
+          echo "## E2E instance up" >> $GITHUB_STEP_SUMMARY
+          echo "- Instance ID: $(pulumi stack output instance_id --cwd infrastructure/e2e)" >> $GITHUB_STEP_SUMMARY
+          echo "- Public IP: $(pulumi stack output public_ip --cwd infrastructure/e2e)" >> $GITHUB_STEP_SUMMARY

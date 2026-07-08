@@ -1,0 +1,6 @@
+name: parlez-e2e
+description: On-demand EC2 instance for parlez e2e testing (created/destroyed via GitHub Actions)
+runtime:
+  name: python
+  options:
+    toolchain: uv
