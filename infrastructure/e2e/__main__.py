@@ -19,7 +19,14 @@ sg = aws.ec2.SecurityGroup("parlez-e2e-sg",
         "from_port": 8000,
         "to_port": 8000,
         "cidr_blocks": ["0.0.0.0/0"],
-    }],
+    },
+        {
+            "protocol": "tcp",
+            "from_port": 22,
+            "to_port": 22,
+            "cidr_blocks": ["0.0.0.0/0"],
+        },
+    ],
     egress=[{
         "protocol": "-1",
         "from_port": 0,
@@ -28,7 +35,7 @@ sg = aws.ec2.SecurityGroup("parlez-e2e-sg",
     }],
 )
 
-# 3. IAM role + instance profile — SSM Session Manager access, no SSH keys.
+# 3. IAM role + instance profile — SSM Session Manager access.
 assume_role_policy = aws.iam.get_policy_document(statements=[{
     "actions": ["sts:AssumeRole"],
     "principals": [{
@@ -55,6 +62,15 @@ ami = aws.ssm.get_parameter(
     name="/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64",
 )
 
+# Register our SSH public key with AWS so Ansible can authenticate.
+with open("parlez-e2e.pub") as f:
+    public_key = f.read().strip()
+
+key_pair = aws.ec2.KeyPair("parlez-e2e-key",
+    key_name="parlez-e2e",
+    public_key=public_key,
+)
+
 # 5. The instance — cheapest general-purpose size, Docker-ready via user_data.
 instance = aws.ec2.Instance("parlez-e2e",
     instance_type="t4g.micro",
@@ -62,6 +78,7 @@ instance = aws.ec2.Instance("parlez-e2e",
     subnet_id=default_subnets.ids[0],
     vpc_security_group_ids=[sg.id],
     iam_instance_profile=instance_profile.name,
+    key_name=key_pair.key_name,
     associate_public_ip_address=True,
     root_block_device={
         "volume_size": 8,
