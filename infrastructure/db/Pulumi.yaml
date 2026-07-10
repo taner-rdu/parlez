@@ -1,0 +1,6 @@
+name: parlez-db
+description: Persistent Postgres EC2 instance for parlez (stop/start only, never destroyed)
+runtime:
+  name: python
+  options:
+    toolchain: uv
