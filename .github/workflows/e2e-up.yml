@@ -8,6 +8,7 @@ concurrency:
 permissions:
   id-token: write
   contents: read
+  packages: write
 
 jobs:
   up:
@@ -34,6 +35,27 @@ jobs:
           command: up
           stack-name: ev_pulumi/dev
           work-dir: infrastructure/e2e
+
+      - name: Build and push image
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker build -t ghcr.io/${{ github.repository_owner }}/parlez-backend:${{ github.sha }} backend/
+          docker push ghcr.io/${{ github.repository_owner }}/parlez-backend:${{ github.sha }}
+
+      - name: Deploy to instance
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/parlez-e2e.pem
+          chmod 600 ~/.ssh/parlez-e2e.pem
+          PUBLIC_IP=$(pulumi stack output public_ip --cwd infrastructure/e2e)
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/parlez-e2e.pem ec2-user@$PUBLIC_IP "
+            echo '${{ secrets.GITHUB_TOKEN }}' | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin &&
+            sudo docker pull ghcr.io/${{ github.repository_owner }}/parlez-backend:${{ github.sha }} &&
+            sudo docker rm -f parlez-api || true &&
+            sudo docker run -d --name parlez-api --restart unless-stopped --network host ghcr.io/${{ github.repository_owner }}/parlez-backend:${{ github.sha }}
+          "
 
       - name: Write summary
         run: |
