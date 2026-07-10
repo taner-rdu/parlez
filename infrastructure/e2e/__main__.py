@@ -53,6 +53,16 @@ aws.iam.RolePolicyAttachment("parlez-e2e-ssm",
     policy_arn="arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
 )
 
+secrets_policy = aws.iam.get_policy_document(statements=[{
+    "actions": ["secretsmanager:GetSecretValue"],
+    "resources": ["arn:aws:secretsmanager:*:*:secret:parlez/*"],
+}])
+
+aws.iam.RolePolicy("parlez-e2e-secrets",
+    role=role.id,
+    policy=secrets_policy.json,
+)
+
 instance_profile = aws.iam.InstanceProfile("parlez-e2e-profile",
     role=role.name,
 )

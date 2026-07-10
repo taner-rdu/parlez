@@ -4,6 +4,13 @@ import os
 
 from pydantic_settings import BaseSettings
 
+@lru_cache()
+def get_jwt_secret() -> str:
+    if key := os.environ.get("JWT_SECRET"):
+        return key
+    client = boto3.client('secretsmanager', region_name='us-east-1')
+    response = client.get_secret_value(SecretId='parlez/jwt-secret')
+    return response['SecretString']
 
 @lru_cache()
 def get_anthropic_api_key() -> str:
@@ -12,7 +19,6 @@ def get_anthropic_api_key() -> str:
     client = boto3.client('secretsmanager', region_name='us-east-1')
     response = client.get_secret_value(SecretId='parlez/anthropic-api-key')
     return response['SecretString']
-
 
 @lru_cache()
 def get_gcp_credentials():
@@ -24,7 +30,6 @@ def get_gcp_credentials():
     response = client.get_secret_value(SecretId='parlez/gcp-tts-key')
     info = json.loads(response['SecretString'])
     return service_account.Credentials.from_service_account_info(info)
-
 
 @lru_cache()
 def get_deepl_api_key() -> str:

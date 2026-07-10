@@ -7,3 +7,4 @@ def test_post_translate_returns_french_translation(playwright):
     assert body["source_lang"] == "EN"
     assert body["target_lang"] == "FR"
     ctx.dispose()
+ 
