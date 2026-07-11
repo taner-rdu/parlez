@@ -9,7 +9,7 @@ def get_api_key() -> str:
     if key := os.environ.get("API_KEY"):
         return key
     client = boto3.client('secretsmanager', region_name='us-east-1')
-    response = client.get_secret_value(SecretId='parlez/jwt-secret')
+    response = client.get_secret_value(SecretId='parlez/api-key')
     return response['SecretString']
 
 @lru_cache()
