@@ -60,6 +60,8 @@ jobs:
             DEEPL_API_KEY,parlez/deepl-api-key
           parse-json-secrets: false
       - name: Start backend
+        env:
+          JWT_SECRET: ci-test-secret
         run: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
         working-directory: ./backend
       - name: Wait for backend
@@ -71,8 +73,14 @@ jobs:
       - name: Install Playwright browsers
         run: uv run playwright install --with-deps chromium
         working-directory: ./backend
+      - name: Mint test token
+        env:
+          JWT_SECRET: ci-test-secret
+          PYTHONPATH: .
+        run: echo "API_TOKEN=$(uv run python scripts/mint_token.py)" >> $GITHUB_ENV
+        working-directory: ./backend
       - name: Run integration tests
-        run: uv run pytest tests/integration/ --alluredir=allure-results
+        run: uv run pytest tests/integration/ --alluredir=allure-results --api-token "$API_TOKEN"
         working-directory: ./backend
       - name: Generate Allure report
         if: always()
