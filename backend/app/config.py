@@ -5,8 +5,8 @@ import os
 from pydantic_settings import BaseSettings
 
 @lru_cache()
-def get_jwt_secret() -> str:
-    if key := os.environ.get("JWT_SECRET"):
+def get_api_key() -> str:
+    if key := os.environ.get("API_KEY"):
         return key
     client = boto3.client('secretsmanager', region_name='us-east-1')
     response = client.get_secret_value(SecretId='parlez/jwt-secret')

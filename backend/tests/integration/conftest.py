@@ -1,13 +1,13 @@
 import pytest
 
-from tests.utils.mint_token import mint_token
-
 
 def pytest_addoption(parser):
-    parser.addoption("--api-token", action="store", default=None, help="Bearer token for API auth")
+    parser.addoption("--api-token", action="store", default=None, help="API key for authenticated requests")
 
 
 @pytest.fixture
 def auth_headers(request):
-    token = request.config.getoption("--api-token") or mint_token("default@parlez.dev", 24)
+    token = request.config.getoption("--api-token")
+    if not token:
+        pytest.fail("--api-token is required to run authenticated integration tests")
     return {"Authorization": f"Bearer {token}"}
