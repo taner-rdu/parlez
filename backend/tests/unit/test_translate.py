@@ -2,10 +2,12 @@ from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
 
+from app.api.deps import get_current_user
 from app.main import app
 
 # TestClient lets us call our FastAPI endpoints without starting a real server.
 # It simulates HTTP requests in-process.
+app.dependency_overrides[get_current_user] = lambda: "test@parlez.dev"
 client = TestClient(app)
 
 # A valid request payload we'll reuse across tests.
