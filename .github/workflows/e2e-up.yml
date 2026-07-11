@@ -56,7 +56,7 @@ jobs:
           chmod 600 ~/.ssh/parlez-e2e.pem
           PUBLIC_IP=$(pulumi stack output public_ip --cwd infrastructure/e2e)
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/parlez-e2e.pem ec2-user@$PUBLIC_IP "
-            for i in \$(seq 1 30); do command -v docker && break; echo 'waiting for docker...'; sleep 10; done &&
+            for i in \$(seq 1 30); do sudo docker info >/dev/null 2>&1 && break; echo 'waiting for docker...'; sleep 10; done &&
             echo '${{ secrets.GITHUB_TOKEN }}' | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin &&
             sudo docker pull ghcr.io/${{ github.repository_owner }}/parlez-backend:${{ github.sha }} &&
             sudo docker rm -f parlez-api || true &&
