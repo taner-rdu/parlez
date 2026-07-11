@@ -61,7 +61,7 @@ jobs:
           parse-json-secrets: false
       - name: Start backend
         env:
-          JWT_SECRET: ci-test-secret
+          API_KEY: ci-test-key
         run: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
         working-directory: ./backend
       - name: Wait for backend
@@ -74,9 +74,7 @@ jobs:
         run: uv run playwright install --with-deps chromium
         working-directory: ./backend
       - name: Run integration tests
-        env:
-          JWT_SECRET: ci-test-secret
-        run: uv run pytest tests/integration/ --alluredir=allure-results
+        run: uv run pytest tests/integration/ --alluredir=allure-results --api-token ci-test-key
         working-directory: ./backend
       - name: Generate Allure report
         if: always()

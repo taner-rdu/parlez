@@ -2,7 +2,7 @@ import logging
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api.deps import get_current_user
+from .api.deps import require_api_key
 from .api.translate import router as translate_router
 from .api.routes.vocab import router as vocab_router
 from .api.routes.conjugation import router as conjugation_router
@@ -20,11 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(translate_router, dependencies=[Depends(get_current_user)])
-app.include_router(vocab_router, dependencies=[Depends(get_current_user)])
-app.include_router(conjugation_router, dependencies=[Depends(get_current_user)])
-app.include_router(sentences_router, dependencies=[Depends(get_current_user)])
-app.include_router(tts_router, dependencies=[Depends(get_current_user)])
+app.include_router(translate_router, dependencies=[Depends(require_api_key)])
+app.include_router(vocab_router, dependencies=[Depends(require_api_key)])
+app.include_router(conjugation_router, dependencies=[Depends(require_api_key)])
+app.include_router(sentences_router, dependencies=[Depends(require_api_key)])
+app.include_router(tts_router, dependencies=[Depends(require_api_key)])
 
 
 @app.get("/health")
