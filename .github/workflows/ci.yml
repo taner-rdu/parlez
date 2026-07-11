@@ -73,14 +73,10 @@ jobs:
       - name: Install Playwright browsers
         run: uv run playwright install --with-deps chromium
         working-directory: ./backend
-      - name: Mint test token
+      - name: Run integration tests
         env:
           JWT_SECRET: ci-test-secret
-          PYTHONPATH: .
-        run: echo "API_TOKEN=$(uv run python scripts/mint_token.py)" >> $GITHUB_ENV
-        working-directory: ./backend
-      - name: Run integration tests
-        run: uv run pytest tests/integration/ --alluredir=allure-results --api-token "$API_TOKEN"
+        run: uv run pytest tests/integration/ --alluredir=allure-results
         working-directory: ./backend
       - name: Generate Allure report
         if: always()
