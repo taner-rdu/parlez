@@ -8,11 +8,11 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
 from app.api.schemas import AddWordRequest, VocabWord
+from app.config import get_anthropic_api_key
 from app.db import get_db
 from app.models import KnownVocab, PartOfSpeech, User, WantToLearn
 
 router = APIRouter(prefix="/vocab", tags=["vocab"])
-_claude = anthropic.Anthropic()
 
 
 def _analyse_word(raw: str) -> dict:
@@ -29,8 +29,9 @@ Respond with a JSON object and nothing else:
 
 If the input is not a real French word, set valid to false and all other fields to null."""
 
+    client = anthropic.Anthropic(api_key=get_anthropic_api_key())
     try:
-        message = _claude.messages.create(
+        message = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=256,
             messages=[{"role": "user", "content": prompt}],
