@@ -11,11 +11,11 @@ from app.api.schemas import (
     SentenceGenerateRequest,
     SentenceGenerateResponse,
 )
+from app.config import get_anthropic_api_key
 from app.db import get_db
 from app.models import KnownVocab, User, WantToLearn
 
 router = APIRouter(prefix="/sentences", tags=["sentences"])
-_claude = anthropic.Anthropic()
 
 
 def _parse_json(text: str):
@@ -65,8 +65,9 @@ CEFR Level: {request.level}{vocab_hint}{tense_hint}
 Respond with a JSON array of exactly 10 strings, nothing else:
 ["sentence 1", "sentence 2", ..., "sentence 10"]"""
 
+    client = anthropic.Anthropic(api_key=get_anthropic_api_key())
     try:
-        message = _claude.messages.create(
+        message = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=1024,
             messages=[{"role": "user", "content": prompt}],
@@ -98,8 +99,9 @@ Respond with JSON only:
   "explanation": "<brief explanation in English>"
 }}"""
 
+    client = anthropic.Anthropic(api_key=get_anthropic_api_key())
     try:
-        message = _claude.messages.create(
+        message = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=256,
             messages=[{"role": "user", "content": prompt}],
