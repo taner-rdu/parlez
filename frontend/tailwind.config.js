@@ -10,6 +10,10 @@ export default {
           600: '#3D5A7A',
           700: '#2E4760',
         },
+        navy: {
+          800: '#26415F',
+          900: '#152238',
+        },
         vermillion: '#B84030',
         glaucous: '#8A9870',
         cream: {
