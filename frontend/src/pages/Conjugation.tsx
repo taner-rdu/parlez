@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-const API = 'http://localhost:8000'
+import { API, authHeaders } from '../api'
 
 const TENSES = [
   'Présent',
@@ -28,7 +27,7 @@ export default function Conjugation() {
     try {
       const res = await fetch(`${API}/conjugation`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ verb: trimmed }),
       })
       if (!res.ok) throw new Error('Server error')

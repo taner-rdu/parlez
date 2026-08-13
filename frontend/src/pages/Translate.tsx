@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API, authHeaders } from '../api'
 
 const LANGUAGES: Record<string, { name: string; flag: string }> = {
   EN: { name: 'English', flag: '🇬🇧' },
@@ -25,9 +26,9 @@ export default function Translate() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('http://localhost:8000/translate', {
+      const res = await fetch(`${API}/translate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ text: input, source_lang: sourceLang, target_lang: targetLang }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)

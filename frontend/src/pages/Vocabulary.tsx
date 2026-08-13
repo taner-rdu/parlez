@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-
-const API = 'http://localhost:8000'
+import { API, authHeaders } from '../api'
 
 type Word = { id: string; french_word: string; part_of_speech: string | null; gender: string | null }
 
@@ -112,8 +111,8 @@ export default function Vocabulary() {
     const controller = new AbortController()
 
     Promise.all([
-      fetch(`${API}/vocab/known`, { signal: controller.signal }),
-      fetch(`${API}/vocab/want-to-learn`, { signal: controller.signal }),
+      fetch(`${API}/vocab/known`, { signal: controller.signal, headers: authHeaders() }),
+      fetch(`${API}/vocab/want-to-learn`, { signal: controller.signal, headers: authHeaders() }),
     ])
       .then(async ([knownRes, wantRes]) => {
         setKnown(await knownRes.json())
@@ -132,7 +131,7 @@ export default function Vocabulary() {
     async (french_word: string): Promise<string | null> => {
       const res = await fetch(`${API}/vocab/${endpoint}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ french_word }),
       })
       if (res.ok) {
@@ -154,7 +153,7 @@ export default function Vocabulary() {
 
   const deleteWord = (endpoint: string, setList: Dispatch<SetStateAction<Word[]>>) =>
     async (id: string) => {
-      const res = await fetch(`${API}/vocab/${endpoint}/${id}`, { method: 'DELETE' })
+      const res = await fetch(`${API}/vocab/${endpoint}/${id}`, { method: 'DELETE', headers: authHeaders() })
       if (res.ok || res.status === 204) setList((prev) => prev.filter((w) => w.id !== id))
     }
 

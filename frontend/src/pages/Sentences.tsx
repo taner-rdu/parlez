@@ -1,6 +1,6 @@
 import { useState } from 'react'
+import { API, authHeaders } from '../api'
 
-const API = 'http://localhost:8000'
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
 type CheckResult = { score: number; correct_translation: string; explanation: string }
@@ -14,9 +14,9 @@ type SentenceState = {
 }
 
 const speak = async (text: string) => {
-  const res = await fetch('http://localhost:8000/tts', {
+  const res = await fetch(`${API}/tts`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({ text }),
   })
   const blob = await res.blob()
@@ -41,7 +41,7 @@ export default function Sentences() {
     try {
       const res = await fetch(`${API}/sentences/generate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ topic: topic.trim(), level, use_known_words_only: useKnownWords, use_want_to_learn_words: useWantToLearnWords, tenses: selectedTenses }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -65,7 +65,7 @@ export default function Sentences() {
     try {
       const res = await fetch(`${API}/sentences/check`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ english_sentence: sentence.text, user_translation: sentence.input }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
