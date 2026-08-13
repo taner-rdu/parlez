@@ -32,6 +32,21 @@ def get_gcp_credentials():
     return service_account.Credentials.from_service_account_info(info)
 
 @lru_cache()
+def get_database_url() -> str:
+    if url := os.environ.get("DATABASE_URL"):
+        return _use_psycopg3(url)
+    client = boto3.client('secretsmanager', region_name='us-east-1')
+    response = client.get_secret_value(SecretId='parlez/database-url')
+    return _use_psycopg3(response['SecretString'])
+
+
+def _use_psycopg3(url: str) -> str:
+    """Force the psycopg3 driver — SQLAlchemy defaults plain postgresql:// URLs to psycopg2."""
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
+
+@lru_cache()
 def get_deepl_api_key() -> str:
     # Prefer env var so CI (and local dev) can inject the key without needing AWS credentials.
     # Falls back to Secrets Manager for production deployments.
