@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import logo from '../assets/Asterix.webp'
+import { getApiKey, setApiKey, clearApiKey } from '../auth'
 
 const NAV_LINKS = [
   { to: '/', label: 'Tableau de bord' },
@@ -9,7 +11,38 @@ const NAV_LINKS = [
   { to: '/sentences', label: 'Phrases' },
 ]
 
+function LoginForm({ onLoggedIn }: { onLoggedIn: () => void }) {
+  const [input, setInput] = useState('')
+
+  const handleSubmit = () => {
+    if (!input.trim()) return
+    setApiKey(input.trim())
+    onLoggedIn()
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <input
+        type="password"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+        placeholder="Clé API"
+        className="w-full px-3 py-2 rounded-lg text-sm bg-white/10 text-white placeholder-white/40 border border-[#2E4760] focus:outline-none focus:border-gold-400"
+      />
+      <button
+        onClick={handleSubmit}
+        className="w-full px-4 py-2.5 bg-gold-500 rounded-lg text-sm font-medium text-navy-900 hover:bg-gold-400 transition-colors"
+      >
+        Se connecter
+      </button>
+    </div>
+  )
+}
+
 export default function Layout() {
+  const [loggedIn, setLoggedIn] = useState(() => !!getApiKey())
+
   return (
     <div className="flex h-screen bg-cream-100" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Sidebar */}
@@ -49,9 +82,16 @@ export default function Layout() {
         </nav>
 
         <div className="mt-auto px-5 pb-8">
-          <button className="w-full px-4 py-3 bg-[#4A6D8C] border border-[#2E4760] rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-[#6A8FAA] hover:border-[#4A6D8C] transition-colors">
-            Se connecter
-          </button>
+          {loggedIn ? (
+            <button
+              onClick={() => { clearApiKey(); setLoggedIn(false) }}
+              className="w-full px-4 py-3 bg-[#4A6D8C] border border-[#2E4760] rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-[#6A8FAA] hover:border-[#4A6D8C] transition-colors"
+            >
+              Se déconnecter
+            </button>
+          ) : (
+            <LoginForm onLoggedIn={() => setLoggedIn(true)} />
+          )}
         </div>
       </aside>
 
