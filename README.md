@@ -6,7 +6,8 @@ from Claude — while building up a personal vocabulary list as you go.
 
 <img width="2506" height="1014" alt="image" src="https://github.com/user-attachments/assets/2b2443a0-eb1b-4b43-b0cb-b49e0d537bd7" />
 
-<img width="2538" height="696" alt="image" src="https://github.com/user-attachments/assets/9c7e1760-822e-454c-a036-1092f103b6f7" />
+<img width="2547" height="877" alt="image" src="https://github.com/user-attachments/assets/9f36342d-6c0d-43b5-8ce3-7e86c08d17a2" />
+
 
 
 ## Features
