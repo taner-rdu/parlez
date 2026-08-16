@@ -91,3 +91,25 @@ aws.secretsmanager.SecretVersion("parlez-db-secret-version",
 pulumi.export("db_endpoint", db.endpoint)
 pulumi.export("db_name", db.db_name)
 pulumi.export("vpc_id", vpc.id)
+
+# Grant the CI role read access to the app secrets it needs to run the
+# backend against real config (no local env var overrides in CI).
+app_secrets_policy = aws.iam.RolePolicy("parlez-github-actions-app-secrets",
+    name="parlez-app-secrets-access",
+    role="parlez-github-actions",
+    policy=json.dumps({
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Sid": "AppSecretsRead",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": [
+                "arn:aws:secretsmanager:us-east-1:494281305257:secret:parlez/api-key*",
+                "arn:aws:secretsmanager:us-east-1:494281305257:secret:parlez/database-url*",
+                "arn:aws:secretsmanager:us-east-1:494281305257:secret:parlez/deepl-api-key*",
+                "arn:aws:secretsmanager:us-east-1:494281305257:secret:parlez/anthropic-api-key*",
+                "arn:aws:secretsmanager:us-east-1:494281305257:secret:parlez/gcp-tts-key*",
+            ],
+        }],
+    }),
+)
