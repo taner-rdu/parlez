@@ -53,6 +53,12 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::494281305257:role/parlez-github-actions
           aws-region: us-east-1
+      - name: Get secrets from AWS
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            API_KEY,parlez/api-key
+          parse-json-secrets: false
       - name: Start backend
         run: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
         working-directory: ./backend
@@ -65,14 +71,8 @@ jobs:
       - name: Install Playwright browsers
         run: uv run playwright install --with-deps chromium
         working-directory: ./backend
-      - name: Get API key for tests
-        id: api-key
-        run: |
-          KEY=$(aws secretsmanager get-secret-value --secret-id parlez/api-key --region us-east-1 --query SecretString --output text)
-          echo "::add-mask::$KEY"
-          echo "value=$KEY" >> "$GITHUB_OUTPUT"
       - name: Run integration tests
-        run: uv run pytest tests/integration/ --alluredir=allure-results --api-token "${{ steps.api-key.outputs.value }}"
+        run: uv run pytest tests/integration/ --alluredir=allure-results --api-token "${{ env.API_KEY }}"
         working-directory: ./backend
       - name: Generate Allure report
         if: always()
