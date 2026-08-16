@@ -115,6 +115,9 @@ export default function Vocabulary() {
       fetch(`${API}/vocab/want-to-learn`, { signal: controller.signal, headers: authHeaders() }),
     ])
       .then(async ([knownRes, wantRes]) => {
+        if (!knownRes.ok || !wantRes.ok) {
+          throw new Error('Failed to load vocabulary')
+        }
         setKnown(await knownRes.json())
         setWantToLearn(await wantRes.json())
       })
