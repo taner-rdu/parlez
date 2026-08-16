@@ -1,21 +1,16 @@
 import boto3
 from functools import lru_cache
-import os
 
 from pydantic_settings import BaseSettings
 
 @lru_cache()
 def get_api_key() -> str:
-    if key := os.environ.get("API_KEY"):
-        return key
     client = boto3.client('secretsmanager', region_name='us-east-1')
     response = client.get_secret_value(SecretId='parlez/api-key')
     return response['SecretString']
 
 @lru_cache()
 def get_anthropic_api_key() -> str:
-    if key := os.environ.get("ANTHROPIC_API_KEY"):
-        return key
     client = boto3.client('secretsmanager', region_name='us-east-1')
     response = client.get_secret_value(SecretId='parlez/anthropic-api-key')
     return response['SecretString']
@@ -24,8 +19,6 @@ def get_anthropic_api_key() -> str:
 def get_gcp_credentials():
     import json
     from google.oauth2 import service_account
-    if path := os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-        return service_account.Credentials.from_service_account_file(path)
     client = boto3.client('secretsmanager', region_name='us-east-1')
     response = client.get_secret_value(SecretId='parlez/gcp-tts-key')
     info = json.loads(response['SecretString'])
@@ -33,8 +26,6 @@ def get_gcp_credentials():
 
 @lru_cache()
 def get_database_url() -> str:
-    if url := os.environ.get("DATABASE_URL"):
-        return _use_psycopg3(url)
     client = boto3.client('secretsmanager', region_name='us-east-1')
     response = client.get_secret_value(SecretId='parlez/database-url')
     return _use_psycopg3(response['SecretString'])
@@ -48,10 +39,6 @@ def _use_psycopg3(url: str) -> str:
 
 @lru_cache()
 def get_deepl_api_key() -> str:
-    # Prefer env var so CI (and local dev) can inject the key without needing AWS credentials.
-    # Falls back to Secrets Manager for production deployments.
-    if key := os.environ.get("DEEPL_API_KEY"):
-        return key
     client = boto3.client('secretsmanager', region_name='us-east-1')
     response = client.get_secret_value(SecretId='parlez/deepl-api-key')
     return response['SecretString']

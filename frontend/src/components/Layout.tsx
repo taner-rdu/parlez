@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import logo from '../assets/Asterix.webp'
 import { getApiKey, setApiKey, clearApiKey } from '../auth'
+import { API } from '../api'
 
 const NAV_LINKS = [
   { to: '/', label: 'Tableau de bord' },
@@ -13,11 +14,27 @@ const NAV_LINKS = [
 
 function LoginForm({ onLoggedIn }: { onLoggedIn: () => void }) {
   const [input, setInput] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [checking, setChecking] = useState(false)
 
-  const handleSubmit = () => {
-    if (!input.trim()) return
-    setApiKey(input.trim())
-    onLoggedIn()
+  const handleSubmit = async () => {
+    const key = input.trim()
+    if (!key || checking) return
+    setChecking(true)
+    setError(null)
+    try {
+      const res = await fetch(`${API}/vocab/known`, { headers: { Authorization: `Bearer ${key}` } })
+      if (!res.ok) {
+        setError(res.status === 401 ? 'Clé API invalide' : 'Une erreur s\'est produite')
+        return
+      }
+      setApiKey(key)
+      onLoggedIn()
+    } catch {
+      setError('Impossible de contacter le serveur')
+    } finally {
+      setChecking(false)
+    }
   }
 
   return (
@@ -30,11 +47,13 @@ function LoginForm({ onLoggedIn }: { onLoggedIn: () => void }) {
         placeholder="Clé API"
         className="w-full px-3 py-2 rounded-lg text-sm bg-white/10 text-white placeholder-white/40 border border-[#2E4760] focus:outline-none focus:border-gold-400"
       />
+      {error && <p className="text-xs text-red-400 px-1">{error}</p>}
       <button
         onClick={handleSubmit}
-        className="w-full px-4 py-2.5 bg-gold-500 rounded-lg text-sm font-medium text-navy-900 hover:bg-gold-400 transition-colors"
+        disabled={checking}
+        className="w-full px-4 py-2.5 bg-gold-500 rounded-lg text-sm font-medium text-navy-900 hover:bg-gold-400 transition-colors disabled:opacity-50"
       >
-        Se connecter
+        {checking ? 'Vérification...' : 'Se connecter'}
       </button>
     </div>
   )
