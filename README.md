@@ -1,4 +1,4 @@
-# ~parlez~
+# \~parlez\~
 
 A French translation practice app. Generate exercises tailored to a topic and
 CEFR level, translate them, and get graded, sentence-by-sentence feedback
